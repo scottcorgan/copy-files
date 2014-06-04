@@ -13,28 +13,41 @@ describe('copy files', function () {
   });
   
   it('copies files to a destination directory', function (done) {
+    var filepath = __dirname + '/copied.txt';
+    
     copyFiles({
       files: {
         'copied.txt': __dirname + '/test.txt'
       },
       dest: __dirname
     }, function (err) {
-      var filepath = __dirname + '/copied.txt';
-      
       expectFileExistsAndHasContents(filepath, 'testing');
-      
       fs.unlinkSync(filepath);
       done();
     });
   });
   
-  function expectFileExistsAndHasContents (filepath, contents) {
-    expect(fs.existsSync(filepath)).to.equal(true);
-    expect(fs.readFileSync(filepath).toString()).to.equal(contents);
-  }
-  
-  it('skips copying a file if the file already exists in the destination directory');
+  it('skips copying a file if the file already exists in the destination directory', function (done) {
+    var filepath = __dirname + '/copied.txt';
+    fs.writeFileSync(filepath, 'already exists');
+    
+    copyFiles({
+      files: {
+        'copied.txt': __dirname + '/test.txt'
+      },
+      dest: __dirname
+    }, function (err) {
+      expectFileExistsAndHasContents(filepath, 'already exists');
+      fs.unlinkSync(filepath);
+      done();
+    });
+  });
   
   it('overwrites a files in the destination directory');
   
 });
+
+function expectFileExistsAndHasContents (filepath, contents) {
+  expect(fs.existsSync(filepath)).to.equal(true);
+  expect(fs.readFileSync(filepath).toString()).to.equal(contents);
+}
