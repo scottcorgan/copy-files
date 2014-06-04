@@ -43,7 +43,22 @@ describe('copy files', function () {
     });
   });
   
-  it('overwrites a files in the destination directory');
+  it('overwrites a files in the destination directory', function (done) {
+    var filepath = __dirname + '/copied.txt';
+    fs.writeFileSync(filepath, 'already exists');
+    
+    copyFiles({
+      files: {
+        'copied.txt': __dirname + '/test.txt'
+      },
+      dest: __dirname,
+      overwrite: true
+    }, function (err) {
+      expectFileExistsAndHasContents(filepath, 'testing');
+      fs.unlinkSync(filepath);
+      done();
+    });
+  });
   
 });
 
